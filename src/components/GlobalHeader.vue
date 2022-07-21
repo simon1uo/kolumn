@@ -3,7 +3,7 @@
     <div class="container">
       <div class="logo flex-column">
         <a href="#" class="navbar-brand">📚 Kolumn</a>
-        <div class="h6 text-white">⛳️ for konwledge column</div>
+        <div class="h6 text-white">⛳️ a knowledge column</div>
       </div>
 
       <ul v-if="!user.isLogin" class="list-inline mb-0">

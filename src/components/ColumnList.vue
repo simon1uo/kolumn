@@ -1,14 +1,12 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col-4 mb-4" v-for="column in columnList" :key="column.id">
-        <div class="card h-100 shadow-sm ">
-          <div class="card-body text-center">
-            <img class="card-img-top rounded-circle border border-light w-25 my-3" :src="column.avatar" :alt="column.title">
-            <h5 class="card-title">{{ column.title }}</h5>
-            <p class="card-text"> {{ column.description }}</p>
-            <a class="btn btn-outline-primary" href="#">more</a>
-          </div>
+  <div class="row">
+    <div class="col-4 mb-4" v-for="column in columnList" :key="column.id">
+      <div class="card h-100 shadow-sm ">
+        <div class="card-body text-center">
+          <img class="card-img-top rounded-circle border border-light w-25 my-3" :src="column.avatar" :alt="column.title">
+          <h5 class="card-title">{{ column.title }}</h5>
+          <p class="card-text"> {{ column.description }}</p>
+          <a class="btn btn-outline-primary" href="#">more</a>
         </div>
       </div>
     </div>
