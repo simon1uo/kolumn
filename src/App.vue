@@ -1,9 +1,7 @@
 <template>
-  <div id="app">
-    <GlobalHeader :user="userTest"/>
-    <router-view/>
-    <GlobalFooter/>
-  </div>
+  <GlobalHeader :user="userTest"/>
+  <router-view/>
+  <GlobalFooter/>
 </template>
 
 <style>
@@ -12,6 +10,7 @@
 <script lang="ts">
 import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
+
 export default {
   components: { GlobalFooter, GlobalHeader },
   setup () {

@@ -1,0 +1,88 @@
+<template>
+  <div class="validate-input-container mb-3">
+    <input type="text" class="form-control"
+           :class="{'is-invalid': inputRef.error}"
+           :value="inputRef.value"
+           @blur="validateInput"
+           @input="updateValue"
+           v-bind="$attrs"
+    >
+    <span v-if="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, onMounted, PropType, reactive } from 'vue'
+import { emitter } from '@/components/ValidateForm.vue'
+
+interface RuleProp {
+  type: 'required' | 'email' | 'range'
+  message: string
+}
+export type RulesProp = RuleProp[]
+const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+
+export default defineComponent({
+  name: 'ValidateInput',
+  props: {
+    rules: Array as PropType<RulesProp>,
+    modelValue: String
+  },
+  inheritAttrs: false,
+  setup (props, context) {
+    const inputRef = reactive({
+      value: props.modelValue || '',
+      error: false,
+      message: ''
+    })
+
+    const validateInput = () => {
+      if (props.rules) {
+        const allPassed = props.rules.every(rule => {
+          let passed = true
+          inputRef.message = rule.message
+          switch (rule.type) {
+            case 'required':
+              passed = (inputRef.value.trim() !== '')
+              break
+            case 'email':
+              passed = emailReg.test(inputRef.value)
+              break
+            default:
+              break
+          }
+          return passed
+        })
+        inputRef.error = !allPassed
+        return allPassed
+      }
+      return true
+    }
+
+    const updateValue = (e: KeyboardEvent) => {
+      const targetValue = (e.target as HTMLInputElement).value
+      inputRef.value = targetValue
+      context.emit('update:modelValue', targetValue)
+    }
+
+    const clearValue = () => {
+      inputRef.value = ''
+    }
+
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput)
+    })
+
+    return {
+      inputRef,
+      validateInput,
+      updateValue,
+      clearValue
+    }
+  }
+})
+</script>
+
+<style lang="less" scoped>
+
+</style>
