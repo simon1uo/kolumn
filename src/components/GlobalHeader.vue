@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar navbar-dark bg-primary justify-content-between mb-4 px-4">
     <div class="container">
-      <div class="logo flex-column">
-        <a href="#" class="navbar-brand">📚 Kolumn</a>
+      <router-link to="/" class="logo flex-column">
+        <div class="navbar-brand">📚 Kolumn</div>
         <div class="h6 text-white">⛳️ a knowledge column</div>
-      </div>
+      </router-link>
 
       <ul v-if="!user.isLogin" class="list-inline mb-0">
         <li class="list-inline-item"><a href="#" class="btn btn-outline-light my-2">SignIn</a></li>
@@ -43,6 +43,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="less" scoped>
-
+<style scoped>
+.logo:hover {
+  text-decoration: none;
+}
 </style>
