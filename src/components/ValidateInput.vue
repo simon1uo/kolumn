@@ -16,9 +16,13 @@ import { defineComponent, onMounted, PropType, reactive } from 'vue'
 import { emitter } from '@/components/ValidateForm.vue'
 
 interface RuleProp {
-  type: 'required' | 'email' | 'range'
+  type: 'required' | 'email' | 'range' | 'validator'
   message: string
+  min?: number
+  max?: number
+  validator?: () => boolean
 }
+
 export type RulesProp = RuleProp[]
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
@@ -48,6 +52,18 @@ export default defineComponent({
             case 'email':
               passed = emailReg.test(inputRef.value)
               break
+            case 'range':
+              if (rule.min && rule.max) {
+                passed = (inputRef.value.trim().length >= rule.min && inputRef.value.trim().length <= rule.max)
+              } else if (rule.min) {
+                passed = (inputRef.value.trim().length >= rule.min)
+              } else if (rule.max) {
+                passed = (inputRef.value.trim().length <= rule.max)
+              }
+              break
+            case 'validator':
+              passed = rule.validator ? rule.validator() : true
+              break
             default:
               break
           }
@@ -67,6 +83,7 @@ export default defineComponent({
 
     const clearValue = () => {
       inputRef.value = ''
+      inputRef.message = ''
     }
 
     onMounted(() => {

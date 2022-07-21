@@ -3,10 +3,9 @@
     <div class="h2 text-primary">Create an account 🚀</div>
     <div class="p-2">
       <ValidateForm @form-submit="onFormSubmit">
-        <div>
+        <div class="mb-3">
           <label for="email">Email</label>
-          <ValidateInput ref="emailInputRef"
-                         id="email"
+          <ValidateInput id="email"
                          type="text"
                          :rules="emailRules"
                          v-model="signupInfo.email"
@@ -14,13 +13,30 @@
                          autocomplete="email"/>
         </div>
         <div class="mb-3">
+          <label for="name">Name</label>
+          <ValidateInput id="name"
+                         type="text"
+                         :rules="nameRules"
+                         v-model="signupInfo.name"
+                         placeholder="input your name"
+                         autocomplete="email"/>
+        </div>
+        <div class="mb-3">
           <label for="password" class="form-label">Password</label>
-          <ValidateInput ref="passwordInputRef"
-                         id="password"
+          <ValidateInput id="password"
                          type="password"
                          :rules="passwordRules"
                          v-model="signupInfo.password"
                          placeholder="input password"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <ValidateInput id="confirmPassword"
+                         type="password"
+                         :rules="confirmPasswordRules"
+                         v-model="signupInfo.confirmPassword"
+                         placeholder="input password again"
           />
         </div>
         <template #submit>
@@ -29,7 +45,8 @@
         <div class="text-black-50 small">By signing up you agree to our <a href="#">terms and privacy policy</a></div>
       </ValidateForm>
       <div class="text-center small">
-        <router-link to="/login" class="text-black">Log in</router-link> | <a href="#" class="text-black">Reset password</a>
+        <router-link to="/login" class="text-black">Log in</router-link>
+        | <a href="#" class="text-black">Reset password</a>
       </div>
     </div>
   </div>
@@ -45,17 +62,33 @@ export default defineComponent({
   name: 'SignupView',
   components: { ValidateInput, ValidateForm },
   setup () {
-    const signupInfo = reactive({
+    const signupData = reactive({
       email: '',
-      password: ''
+      name: '',
+      password: '',
+      confirmPassword: ''
     })
 
     const emailRules: RulesProp = [
       { type: 'required', message: 'Email cannot be empty!' },
       { type: 'email', message: 'Please input valid email address' }
     ]
+    const nameRules: RulesProp = [
+      { type: 'required', message: 'Name cannot be empty!' },
+      { type: 'range', min: 6, max: 10, message: 'Length of name must between 6~10' }
+    ]
     const passwordRules: RulesProp = [
-      { type: 'required', message: 'Password cannot be empty!' }
+      { type: 'required', message: 'Password cannot be empty!' },
+      { type: 'range', min: 6, max: 16, message: 'Length of password must between 6~16' }
+    ]
+    const confirmPasswordRules: RulesProp = [
+      { type: 'required', message: 'Password cannot be empty!' },
+      { type: 'range', min: 6, max: 16, message: 'Length of password must between 6~16' },
+      {
+        type: 'validator',
+        validator: () => signupData.password === signupData.confirmPassword,
+        message: 'The password you input doesnt match'
+      }
     ]
 
     const onFormSubmit = (result: boolean) => {
@@ -65,9 +98,11 @@ export default defineComponent({
     }
 
     return {
-      signupInfo,
+      signupInfo: signupData,
       emailRules,
+      nameRules,
       passwordRules,
+      confirmPasswordRules,
       onFormSubmit
     }
   }

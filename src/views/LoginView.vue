@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto w-50 p-3">
-    <div class="h2 text-primary">Log in  👋</div>
+    <div class="h2 text-primary">Log in 👋</div>
     <div class="p-2">
       <ValidateForm @form-submit="onFormSubmit">
         <div>
@@ -29,7 +29,8 @@
         </template>
       </ValidateForm>
       <div class="text-center small">
-        <router-link to="/signup" class="text-black">Sign Up</router-link> | <a href="#" class="text-black">Reset password</a>
+        <router-link to="/signup" class="text-black">Sign Up</router-link>
+        | <a href="#" class="text-black">Reset password</a>
       </div>
     </div>
   </div>
