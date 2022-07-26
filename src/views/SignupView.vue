@@ -55,8 +55,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
-import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
-import ValidateForm from '@/components/ValidateForm.vue'
+import ValidateInput, { RulesProp } from '@/base/ValidateInput.vue'
+import ValidateForm from '@/base/ValidateForm.vue'
 
 export default defineComponent({
   name: 'SignupView',

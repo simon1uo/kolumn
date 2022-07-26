@@ -8,15 +8,16 @@
 
 </style>
 <script lang="ts">
-import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
+import GlobalHeader from '@/components/GlobalHeader.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
+import { UserProps } from './store/types'
 
 export default {
   components: { GlobalFooter, GlobalHeader },
   setup () {
     const userTest: UserProps = {
       id: 1,
-      isLogin: true,
+      isLogin: false,
       name: 'Simon'
     }
 

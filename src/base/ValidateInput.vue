@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, reactive } from 'vue'
-import { emitter } from '@/components/ValidateForm.vue'
+import { emitter } from '@/base/ValidateForm.vue'
 
 interface RuleProp {
   type: 'required' | 'email' | 'range' | 'validator'

@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
-import DropdownItem from '@/components/DropdownItem.vue'
+import DropdownItem from '@/base/DropdownItem.vue'
 import useClickOutside from '@/hooks/useClickOutside'
 
 export default defineComponent({

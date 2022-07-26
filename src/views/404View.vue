@@ -1,14 +1,14 @@
 <template>
-  <footer class="container text-center small">
-    <div class="my-4 text-black-50">© Kolumn(2022) copyright | <a href="#" class="text-primary">Github</a></div>
-  </footer>
+  <div class="404">
+    <h1>404 Not Found</h1>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'GlobalFooter',
+  name: '404View',
   setup () {
     return {}
   }

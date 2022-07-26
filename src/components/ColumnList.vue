@@ -1,12 +1,13 @@
 <template>
   <div class="row">
+    <div class="h4 text-center mb-3">Explore Kolumn</div>
     <div class="col-4 mb-4" v-for="column in columnList" :key="column.id">
       <div class="card h-100 shadow-sm ">
         <div class="card-body text-center">
           <img class="card-img-top rounded-circle border border-light w-25 my-3" :src="column.avatar" :alt="column.title">
           <h5 class="card-title">{{ column.title }}</h5>
           <p class="card-text"> {{ column.description }}</p>
-          <a class="btn btn-outline-primary" href="#">more</a>
+          <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary" href="#">More</router-link>
         </div>
       </div>
     </div>
@@ -15,13 +16,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-
-export interface ColumnProps {
-  id: number
-  title: string
-  avatar?: string
-  description: string
-}
+import { ColumnProps } from '@/store/types'
 
 export default defineComponent({
   name: 'ColumnList',
