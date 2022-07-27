@@ -41,11 +41,15 @@ import { defineComponent, reactive, ref } from 'vue'
 import ValidateInput from '@/base/ValidateInput.vue'
 import ValidateForm from '@/base/ValidateForm.vue'
 import { RulesProp } from '@/store/types'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'LoginView',
   components: { ValidateForm, ValidateInput },
   setup () {
+    const store = useStore()
+    const router = useRouter()
     const emailInputRef = ref<any>()
     const passwordInputRef = ref<any>()
     const emailRules: RulesProp = [
@@ -56,14 +60,23 @@ export default defineComponent({
       { type: 'required', message: 'Password cannot be empty!' }
     ]
     const loginInfo = reactive({
-      email: '',
-      password: ''
+      email: 'simon1uo@163.com',
+      password: 'simon2000'
     })
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        console.log(result)
-        emailInputRef.value.clearValue()
-        passwordInputRef.value.clearValue()
+        const payload = {
+          email: loginInfo.email,
+          password: loginInfo.password
+        }
+        console.log(payload)
+
+        store.dispatch('loginAndFetch', payload).then(res => {
+          console.log(res)
+          router.push('/')
+          emailInputRef.value.clearValue()
+          passwordInputRef.value.clearValue()
+        })
       }
     }
     return {

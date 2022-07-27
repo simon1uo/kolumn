@@ -14,14 +14,25 @@ import GlobalFooter from '@/components/GlobalFooter.vue'
 import LoadingStatus from '@/base/LoadingStatus.vue'
 
 import { useStore } from 'vuex'
-import { computed } from 'vue'
+import { axios } from '@/libs/http'
+import { computed, onMounted } from 'vue'
+import { GlobalDataProps } from '@/store/types'
 
 export default {
   components: { LoadingStatus, GlobalFooter, GlobalHeader },
   setup () {
-    const store = useStore()
-    const currentUser = computed(() => store.state.user)
+    const store = useStore<GlobalDataProps>()
     const isLoading = computed(() => store.state.loading)
+
+    const currentUser = computed(() => store.state.user)
+    const token = computed(() => store.state.token)
+
+    onMounted(() => {
+      if (!currentUser.value.isLogin && token.value) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+        store.dispatch('fetchCurrentUser')
+      }
+    })
     return {
       currentUser,
       isLoading

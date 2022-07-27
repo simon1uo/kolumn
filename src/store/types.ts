@@ -1,8 +1,11 @@
 export interface UserProps {
   isLogin: boolean
-  name?: string
-  id?: string
-  columnId?: number
+  nickName?: string
+  _id?: string
+  column?: string
+  email?: string
+  description?: string
+  avatar?: ImageProps
 }
 
 export interface ImageProps {
@@ -45,4 +48,5 @@ export interface GlobalDataProps {
   columns: ColumnProps[]
   posts: PostProps[]
   user: UserProps
+  token: string
 }

@@ -54,8 +54,8 @@ import { ColumnProps, PostProps, UserProps } from '@/store/types'
 // ]
 
 export const currentUser: UserProps = {
-  isLogin: true,
-  name: 'simon',
-  id: 'test1',
-  columnId: 1
+  isLogin: false,
+  nickName: 'simon',
+  _id: 'test',
+  column: 'test'
 }
