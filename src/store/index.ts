@@ -1,29 +1,55 @@
 import { createStore } from 'vuex'
 import { GlobalDataProps } from '@/store/types'
-import { currentUser, testColumns, testPosts } from '@/store/testData'
+import { currentUser } from '@/store/testData'
+import { axios } from '@/libs/http'
 
 export default createStore<GlobalDataProps>({
   state: {
-    columns: testColumns,
-    posts: testPosts,
+    columns: [],
+    posts: [],
     user: currentUser
   },
   getters: {
-    getColumnById: (state) => (id: number) => {
-      return state.columns.find(c => c.id === id)
+    getColumnById: (state) => (id: string) => {
+      return state.columns.find(c => c._id === id)
     },
-    getPostsByCid: (state) => (cid: number) => {
-      return state.posts.filter(post => post.columnId === cid)
+    getPostsByCid: (state) => (cid: string) => {
+      return state.posts.filter(post => post.column === cid)
     }
   },
   mutations: {
-    login (state) {
-      state.user = { ...state.user, isLogin: true, name: 'Simon' }
-    },
     createPost (state, newPost) {
       state.posts.push(newPost)
+    },
+    fetchColumns (state, data) {
+      console.log(data.data.list)
+      state.columns = data.data.list
+    },
+    fetchColumn (state, data) {
+      console.log(data.data)
+      state.columns = [data.data]
+    },
+    fetchPosts (state, data) {
+      console.log(data.data.list)
+      state.posts = data.data.list
     }
   },
-  actions: {},
+  actions: {
+    fetchColumns (context) {
+      axios.get('/api/columns').then(res => {
+        context.commit('fetchColumns', res.data)
+      })
+    },
+    fetchColumn ({ commit }, cid) {
+      axios.get(`/api/columns/${cid}`).then(res => {
+        commit('fetchColumn', res.data)
+      })
+    },
+    fetchPosts ({ commit }, cid) {
+      axios.get(`/api/columns/${cid}/posts`).then(res => {
+        commit('fetchPosts', res.data)
+      })
+    }
+  },
   modules: {}
 })

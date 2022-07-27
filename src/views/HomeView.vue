@@ -4,7 +4,7 @@
       <div class="h4">Feel free to write </div>
       <img src="../assets/write.svg" alt="" class="w-50">
       <p>
-        <router-link to="/" class="btn btn-primary d-block w-25 mx-auto my-4">Write Something ✍🏻</router-link>
+        <router-link to="/create" class="btn btn-primary d-block w-25 mx-auto my-4">Write Something ✍🏻</router-link>
       </p>
     </section>
     <ColumnList :list="list"/>
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import ColumnList from '@/components/ColumnList.vue'
 import { useStore } from 'vuex'
 
@@ -23,6 +23,9 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
+    onMounted(() => {
+      store.dispatch('fetchColumns')
+    })
     const list = computed(() => store.state.columns)
     return {
       list
