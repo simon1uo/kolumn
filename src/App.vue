@@ -1,5 +1,5 @@
 <template>
-  <GlobalHeader :user="userTest"/>
+  <GlobalHeader :user="currentUser"/>
   <router-view/>
   <GlobalFooter/>
 </template>
@@ -10,19 +10,16 @@
 <script lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import GlobalFooter from '@/components/GlobalFooter.vue'
-import { UserProps } from './store/types'
+import { useStore } from 'vuex'
+import { computed } from 'vue'
 
 export default {
   components: { GlobalFooter, GlobalHeader },
   setup () {
-    const userTest: UserProps = {
-      id: 1,
-      isLogin: false,
-      name: 'Simon'
-    }
-
+    const store = useStore()
+    const currentUser = computed(() => store.state.user)
     return {
-      userTest
+      currentUser
     }
   }
 }

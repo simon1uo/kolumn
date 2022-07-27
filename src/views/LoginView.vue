@@ -38,8 +38,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import ValidateInput, { RulesProp } from '@/base/ValidateInput.vue'
+import ValidateInput from '@/base/ValidateInput.vue'
 import ValidateForm from '@/base/ValidateForm.vue'
+import { RulesProp } from '@/store/types'
 
 export default defineComponent({
   name: 'LoginView',

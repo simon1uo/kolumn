@@ -12,9 +12,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import ColumnList from '@/components/ColumnList.vue'
-import { testColumns } from '@/store/testColumns'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'HomeView',
@@ -22,8 +22,10 @@ export default defineComponent({
     ColumnList
   },
   setup () {
+    const store = useStore()
+    const list = computed(() => store.state.columns)
     return {
-      list: testColumns
+      list
     }
   }
 

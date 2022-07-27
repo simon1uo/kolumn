@@ -4,7 +4,7 @@
     <div class="col-4 mb-4" v-for="column in columnList" :key="column.id">
       <div class="card h-100 shadow-sm ">
         <div class="card-body text-center">
-          <img class="card-img-top rounded-circle border border-light w-25 my-3" :src="column.avatar" :alt="column.title">
+          <img class="card-img-top rounded-circle border border-light my-3" :src="column.avatar" :alt="column.title">
           <h5 class="card-title">{{ column.title }}</h5>
           <p class="card-text"> {{ column.description }}</p>
           <router-link :to="`/column/${column.id}`" class="btn btn-outline-primary" href="#">More</router-link>
@@ -43,6 +43,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="less" scoped>
-
+<style scoped>
+.card-body img{
+  width: 50px;
+}
 </style>

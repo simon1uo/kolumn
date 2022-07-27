@@ -1,12 +1,23 @@
 <template>
   <div class="validate-input-container mb-3">
-    <input type="text" class="form-control"
+    <input v-if="tag !== 'textarea'"
+           type="text"
+           class="form-control"
            :class="{'is-invalid': inputRef.error}"
            :value="inputRef.value"
            @blur="validateInput"
            @input="updateValue"
            v-bind="$attrs"
     >
+    <textarea v-else
+              class="form-control"
+              :class="{'is-invalid': inputRef.error}"
+              :value="inputRef.value"
+              @blur="validateInput"
+              @input="updateValue"
+              v-bind="$attrs"
+    />
+
     <span v-if="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
   </div>
 </template>
@@ -14,23 +25,19 @@
 <script lang="ts">
 import { defineComponent, onMounted, PropType, reactive } from 'vue'
 import { emitter } from '@/base/ValidateForm.vue'
+import { RulesProp, TagType } from '@/store/types'
 
-interface RuleProp {
-  type: 'required' | 'email' | 'range' | 'validator'
-  message: string
-  min?: number
-  max?: number
-  validator?: () => boolean
-}
-
-export type RulesProp = RuleProp[]
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
 export default defineComponent({
   name: 'ValidateInput',
   props: {
     rules: Array as PropType<RulesProp>,
-    modelValue: String
+    modelValue: String,
+    tag: {
+      type: String as PropType<TagType>,
+      default: 'input'
+    }
   },
   inheritAttrs: false,
   setup (props, context) {

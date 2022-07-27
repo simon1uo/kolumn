@@ -9,28 +9,30 @@
         <p class="text-muted">{{ column.description }}</p>
       </div>
     </div>
-    <PostList :list="list"/>
+    <PostList :list="postList"/>
     <button class="btn btn-outline-primary mt-2 mb-5 mx-auto btn-block w-100">Load more</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
-import { testColumns, testPost } from '@/store/testColumns'
 import PostList from '@/components/PostList.vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   name: 'ColumnDetailView',
   components: { PostList },
   setup () {
     const route = useRoute()
+    const store = useStore()
+
     const currentId = +route.params.id
-    const column = testColumns.find(c => c.id === currentId)
-    const list = testPost.filter(p => p.columnId === currentId)
+    const column = computed(() => store.getters.getColumnById(currentId))
+    const postList = computed(() => store.getters.getPostsByCid(currentId))
     return {
       column,
-      list
+      postList
     }
   }
 })
