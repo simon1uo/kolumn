@@ -41,6 +41,7 @@ export type RulesProp = RuleProp[]
 export type TagType = 'input' | 'textarea'
 
 export interface GlobalDataProps {
+  loading: boolean
   columns: ColumnProps[]
   posts: PostProps[]
   user: UserProps
