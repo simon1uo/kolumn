@@ -1,3 +1,10 @@
+export interface ImageProps {
+  _id?: string
+  url?: string
+  fitUrl?: string
+  createdAt?: string
+}
+
 export interface UserProps {
   isLogin: boolean
   nickName?: string
@@ -6,12 +13,6 @@ export interface UserProps {
   email?: string
   description?: string
   avatar?: ImageProps
-}
-
-export interface ImageProps {
-  _id?: string
-  url: string
-  createdAt?: string
 }
 
 export interface ColumnProps {
@@ -26,7 +27,7 @@ export interface PostProps {
   title: string
   excerpt?: string
   content?: string
-  image?: ImageProps
+  image?: ImageProps | string
   createdAt: string
   column: string
 }
