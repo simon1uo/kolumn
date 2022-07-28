@@ -46,15 +46,12 @@ export default createStore<GlobalDataProps>({
       state.posts.push(newPost)
     },
     fetchColumns (state, data) {
-      console.log(data.data.list)
       state.columns = data.data.list
     },
     fetchColumn (state, data) {
-      console.log(data.data)
       state.columns = [data.data]
     },
     fetchPosts (state, data) {
-      console.log(data.data.list)
       state.posts = data.data.list
     },
     login (state, data) {
@@ -64,7 +61,6 @@ export default createStore<GlobalDataProps>({
       axios.defaults.headers.common.Authorization = `Bearer ${token}`
     },
     fetchCurrentUser (state, data) {
-      console.log(data.data)
       state.user = { isLogin: true, ...data.data }
     },
     logout (state) {
@@ -94,6 +90,9 @@ export default createStore<GlobalDataProps>({
       return dispatch('login', loginData).then(() => {
         return dispatch('fetchCurrentUser')
       })
+    },
+    signup ({ commit }, payload) {
+      return postAndCommit('/api/users', 'signup', commit, payload)
     }
   },
   modules: {}
