@@ -63,4 +63,11 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+router.afterEach((to, from, failure) => {
+  // chrome
+  document.body.scrollTop = 0
+  // firefox
+  document.documentElement.scrollTop = 0
+})
+
 export default router

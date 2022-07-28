@@ -1,5 +1,5 @@
 import { Commit, createStore } from 'vuex'
-import { GlobalDataProps } from '@/store/types'
+import { GlobalDataProps, GlobalErrorProps } from '@/store/types'
 import { currentUser } from '@/store/testData'
 import { axios } from '@/libs/http'
 import { StorageHandler, StorageType } from '@/libs/storage'
@@ -21,6 +21,7 @@ const postAndCommit = async (url: string, mutationName: string, commit: Commit, 
 export default createStore<GlobalDataProps>({
   state: {
     loading: false,
+    error: { status: false },
     columns: [],
     posts: [],
     user: currentUser,
@@ -37,6 +38,9 @@ export default createStore<GlobalDataProps>({
   mutations: {
     setLoading (state, status) {
       state.loading = status
+    },
+    setError (state, err: GlobalErrorProps) {
+      state.error = err
     },
     createPost (state, newPost) {
       state.posts.push(newPost)
@@ -65,7 +69,9 @@ export default createStore<GlobalDataProps>({
     },
     logout (state) {
       state.token = ''
+      state.user = { isLogin: false }
       storageHandler.removeItem(StorageType.Local, 'token')
+      delete axios.defaults.headers.common.Authorization
     }
   },
   actions: {

@@ -43,6 +43,7 @@ import ValidateForm from '@/base/ValidateForm.vue'
 import { RulesProp } from '@/store/types'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import createMessage from '@/base/createMessage'
 
 export default defineComponent({
   name: 'LoginView',
@@ -72,10 +73,14 @@ export default defineComponent({
         console.log(payload)
 
         store.dispatch('loginAndFetch', payload).then(res => {
-          console.log(res)
-          router.push('/')
-          emailInputRef.value.clearValue()
-          passwordInputRef.value.clearValue()
+          createMessage('Login success', 'success')
+          setTimeout(() => {
+            router.push('/')
+            emailInputRef.value.clearValue()
+            passwordInputRef.value.clearValue()
+          }, 2000)
+        }).catch(err => {
+          console.log(err)
         })
       }
     }

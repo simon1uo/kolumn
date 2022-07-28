@@ -43,8 +43,16 @@ export type RulesProp = RuleProp[]
 
 export type TagType = 'input' | 'textarea'
 
+export type MessageType = 'success' | 'error' | 'default'
+
+export interface GlobalErrorProps {
+  status: boolean
+  message?: string
+}
+
 export interface GlobalDataProps {
   loading: boolean
+  error: GlobalErrorProps
   columns: ColumnProps[]
   posts: PostProps[]
   user: UserProps

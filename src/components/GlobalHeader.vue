@@ -18,8 +18,8 @@
         <li class="list-inline-item">
           <DropdownMenu :title="`Hi👋🏻 ${user.nickName}`">
             <DropdownItem><router-link to="/create" class="dropdown-item">New Post</router-link></DropdownItem>
-            <DropdownItem disabled><router-link to="/" class="dropdown-item">Edit Profile</router-link></DropdownItem>
-            <DropdownItem><a href="#" class="dropdown-item" @click.prevent="logout">Logout</a></DropdownItem>
+            <DropdownItem disabled><router-link to="/" class="dropdown-item text-muted">Edit Profile</router-link></DropdownItem>
+            <DropdownItem><a href="#" class="dropdown-item" @click.prevent="handleLogout">Logout</a></DropdownItem>
           </DropdownMenu>
         </li>
       </ul>
@@ -48,12 +48,12 @@ export default defineComponent({
   setup () {
     const store = useStore()
     const router = useRouter()
-    const logout = () => {
+    const handleLogout = () => {
       store.commit('logout')
-      router.push('/login')
+      router.push('home')
     }
     return {
-      logout
+      handleLogout
     }
   }
 })
