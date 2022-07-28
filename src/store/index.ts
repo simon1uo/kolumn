@@ -44,6 +44,7 @@ export default createStore<GlobalDataProps>({
     },
     createPost (state, newPost) {
       state.posts.push(newPost)
+      console.log(newPost)
     },
     fetchColumns (state, data) {
       state.columns = data.data.list
@@ -94,6 +95,9 @@ export default createStore<GlobalDataProps>({
     },
     signup ({ commit }, payload) {
       return postAndCommit('/api/users', 'signup', commit, payload)
+    },
+    createPost ({ commit }, payload) {
+      return postAndCommit('/api/posts', 'createPost', commit, payload)
     }
   },
   modules: {}

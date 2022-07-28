@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="h4">Create Post</div>
+    <div class="h4">✍🏻 Create Post</div>
     <ValidateUpload action="/api/upload"
                     class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
                     :before-upload="beforeUpload"
@@ -82,23 +82,7 @@ export default defineComponent({
       { type: 'required', message: 'Post content cannot be empty' }
     ]
 
-    const onFormSubmit = (result: boolean) => {
-      if (result) {
-        const { column } = store.state.user
-        if (column) {
-          const newPost: PostProps = {
-            _id: new Date().getTime().toLocaleString(),
-            title: titleVal.value,
-            content: postContentVal.value,
-            createdAt: new Date().toLocaleString(),
-            column
-          }
-
-          store.commit('createPost', newPost)
-          router.push({ name: 'column', params: { id: column } })
-        }
-      }
-    }
+    let imageId = ''
 
     const beforeUpload = (file: File) => {
       const result = beforeUploadCheck(file, { format: ['image/jpeg', 'image/png'], size: 1 })
@@ -113,10 +97,43 @@ export default defineComponent({
 
     const onFileUploadedSuccess = (rawData: ResponseType<ImageProps>) => {
       createMessage(`Uploaded result ${rawData.data._id}`, 'success')
+      if (rawData.data._id) {
+        imageId = rawData.data._id
+      }
     }
 
     const onFileUploadedError = () => {
       createMessage('Upload Fail, please try again', 'error')
+    }
+
+    const onFormSubmit = (result: boolean) => {
+      if (result) {
+        const { column, _id } = store.state.user
+        if (column) {
+          const newPost: PostProps = {
+            title: titleVal.value,
+            content: postContentVal.value,
+            column,
+            author: _id
+          }
+          if (imageId) {
+            newPost.image = imageId
+          }
+
+          // console.log(newPost)
+          store.dispatch('createPost', newPost).then(() => {
+            createMessage('Post submit successfully. you will jump to post after 2s', 'success', 2000)
+            setTimeout(() => {
+              router.push({
+                name: 'column',
+                params: {
+                  id: column
+                }
+              })
+            }, 2000)
+          })
+        }
+      }
     }
 
     return {
