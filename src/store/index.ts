@@ -33,6 +33,9 @@ export default createStore<GlobalDataProps>({
     },
     getPostsByCid: (state) => (cid: string) => {
       return state.posts.filter(post => post.column === cid)
+    },
+    getCurrentPost: (state) => (id: string) => {
+      return state.posts.find(p => p._id === id)
     }
   },
   mutations: {
@@ -54,6 +57,12 @@ export default createStore<GlobalDataProps>({
     },
     fetchPosts (state, data) {
       state.posts = data.data.list
+    },
+    fetchPost (state, data) {
+      const targetId = data.data._id
+      const oldIndex = state.posts.findIndex(c => c._id === targetId)
+      const newPost = data.data
+      state.posts.splice(oldIndex, 1, newPost)
     },
     login (state, data) {
       const { token } = data.data
@@ -81,6 +90,9 @@ export default createStore<GlobalDataProps>({
     },
     fetchPosts ({ commit }, cid) {
       return getAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
+    },
+    fetchPost ({ commit }, pid) {
+      return getAndCommit(`/api/posts/${pid}`, 'fetchPost', commit)
     },
     login ({ commit }, payload) {
       return postAndCommit('/api/user/login', 'login', commit, payload)

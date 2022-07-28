@@ -30,7 +30,8 @@ export interface PostProps {
   image?: ImageProps | string
   createdAt?: string
   column?: string
-  author?: string
+  author?: UserProps | string
+  isHTML?: boolean
 }
 
 interface RuleProp {
