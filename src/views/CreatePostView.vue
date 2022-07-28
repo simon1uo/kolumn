@@ -60,6 +60,7 @@ import ValidateUpload from '@/base/ValidateUpload.vue'
 import createMessage from '@/base/createMessage'
 
 import { ImageProps, PostProps, RulesProp, ResponseType } from '@/store/types'
+import { beforeUploadCheck } from '@/libs/helper'
 
 export default defineComponent({
   name: 'CreatePostView',
@@ -100,11 +101,14 @@ export default defineComponent({
     }
 
     const beforeUpload = (file: File) => {
-      const isJPG = file.type === 'image/jpeg'
-      if (!isJPG) {
-        createMessage('上传的文件格式只能是jpg格式', 'error')
+      const result = beforeUploadCheck(file, { format: ['image/jpeg', 'image/png'], size: 1 })
+      const { passed, error } = result
+      if (error === 'format') {
+        createMessage('The format of file you upload can only be .jpeg or .png', 'error')
+      } else if (error === 'size') {
+        createMessage('The size of file you upload can only be under 1MB', 'error')
       }
-      return isJPG
+      return passed
     }
 
     const onFileUploadedSuccess = (rawData: ResponseType<ImageProps>) => {
