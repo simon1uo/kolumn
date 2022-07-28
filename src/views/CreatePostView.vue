@@ -1,6 +1,10 @@
 <template>
   <div class="container">
     <div class="h4">Create Post</div>
+    <ValidateUpload action="/api/upload"
+                    :before-upload="beforeUpload"
+                    @file-uploaded-success="onFileUploadedSuccess"
+                    @file-uploaded-error="onFileUploadedError"/>
     <ValidateForm @form-submit="onFormSubmit">
       <div class="mb-3">
         <label for="title" class="form-label">Post Title: </label>
@@ -28,16 +32,22 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import ValidateForm from '@/base/ValidateForm.vue'
-import ValidateInput from '@/base/ValidateInput.vue'
-import { PostProps, RulesProp } from '@/store/types'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+
+import ValidateForm from '@/base/ValidateForm.vue'
+import ValidateInput from '@/base/ValidateInput.vue'
+import ValidateUpload from '@/base/ValidateUpload.vue'
+import createMessage from '@/base/createMessage'
+
+import { ImageProps, PostProps, RulesProp, ResponseType } from '@/store/types'
 
 export default defineComponent({
   name: 'CreatePostView',
   components: {
-    ValidateForm, ValidateInput
+    ValidateUpload,
+    ValidateForm,
+    ValidateInput
   },
   setup () {
     const store = useStore()
@@ -69,12 +79,32 @@ export default defineComponent({
         }
       }
     }
+
+    const beforeUpload = (file: File) => {
+      const isJPG = file.type === 'image/jpeg'
+      if (!isJPG) {
+        createMessage('上传的文件格式只能是jpg格式', 'error')
+      }
+      return isJPG
+    }
+
+    const onFileUploadedSuccess = (rawData: ResponseType<ImageProps>) => {
+      createMessage(`Uploaded result ${rawData.data._id}`, 'success')
+    }
+
+    const onFileUploadedError = () => {
+      createMessage('Upload Fail, please try again', 'error')
+    }
+
     return {
       titleVal,
       titleRules,
       postContentVal,
       postContentRules,
-      onFormSubmit
+      onFormSubmit,
+      beforeUpload,
+      onFileUploadedSuccess,
+      onFileUploadedError
     }
   }
 })

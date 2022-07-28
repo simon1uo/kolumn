@@ -58,3 +58,9 @@ export interface GlobalDataProps {
   user: UserProps
   token: string
 }
+
+export interface ResponseType<P ={}> {
+  code: number
+  msg: string
+  data: P
+}
