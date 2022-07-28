@@ -2,7 +2,7 @@
   <div class="container w-100">
     <div class="row mb-4 border-bottom pb-4 align-items-center" v-if="column">
       <div class="col-3 text-center">
-        <img :src="column.avatar && column.avatar.url" :alt="column.title" class="rounded-circle border w-100">
+        <img :src="column.avatar && column.avatar.fitUrl" :alt="column.title" class="rounded-circle border w-100">
       </div>
       <div class="col-9">
         <div class="h4">{{ column.title }}</div>
@@ -20,7 +20,7 @@ import { useRoute } from 'vue-router'
 import PostList from '@/components/PostList.vue'
 import { useStore } from 'vuex'
 import { ColumnProps, PostProps } from '@/store/types'
-import { generateFitUrl } from '@/libs/helper'
+import { addAvatar, generateFitUrl } from '@/libs/helper'
 
 export default defineComponent({
   name: 'ColumnDetailView',
@@ -39,7 +39,7 @@ export default defineComponent({
     const column = computed(() => {
       const selectColumn = store.getters.getColumnById(currentId) as ColumnProps
       if (selectColumn) {
-        generateFitUrl(selectColumn, 100, 100)
+        addAvatar(selectColumn, 100, 100)
       }
       return selectColumn
     })
