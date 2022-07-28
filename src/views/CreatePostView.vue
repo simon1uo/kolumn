@@ -2,9 +2,28 @@
   <div class="container">
     <div class="h4">Create Post</div>
     <ValidateUpload action="/api/upload"
+                    class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
                     :before-upload="beforeUpload"
                     @file-uploaded-success="onFileUploadedSuccess"
-                    @file-uploaded-error="onFileUploadedError"/>
+                    @file-uploaded-error="onFileUploadedError">
+      <div class="h4">Upload you post cover images 🚀</div>
+
+      <template #loading>
+        <div class="d-flex">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading ... </span>
+          </div>
+          <div class="h4 mx-2">Uploading ...</div>
+        </div>
+      </template>
+      <template #uploaded="dataProps">
+        <div class="uploaded-area">
+          <img :src="dataProps.uploadedData.data.url" alt="post-cover"/>
+          <div class="h4">Upload success, click to re-upload.</div>
+        </div>
+      </template>
+
+    </ValidateUpload>
     <ValidateForm @form-submit="onFormSubmit">
       <div class="mb-3">
         <label for="title" class="form-label">Post Title: </label>
@@ -110,6 +129,34 @@ export default defineComponent({
 })
 </script>
 
-<style lang="less" scoped>
+<style>
+.file-upload-container {
+  height: 200px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.file-upload-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploaded-area {
+  position: relative;
+}
+
+.uploaded-area .h4 {
+  display: none;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  color: #999;
+}
+
+.uploaded-area:hover .h4 {
+  display: block;
+}
 
 </style>

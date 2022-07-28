@@ -59,6 +59,7 @@ export default createStore<GlobalDataProps>({
       state.token = token
       storageHandler.setItem(storageType, 'token', token)
       axios.defaults.headers.common.Authorization = `Bearer ${token}`
+      console.log(state.user)
     },
     fetchCurrentUser (state, data) {
       state.user = { isLogin: true, ...data.data }

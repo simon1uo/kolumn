@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
   const { requiredLogin, redirectAlreadyLogin } = to.meta
   if (!user.isLogin) {
     if (token) {
-      axios.defaults.headers.common.Authorizaiton = `Bearer ${token}`
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
       store.dispatch('fetchCurrentUser').then(() => {
         if (redirectAlreadyLogin) {
           next('/')
