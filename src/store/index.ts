@@ -2,14 +2,14 @@ import { Commit, createStore } from 'vuex'
 import { GlobalDataProps, GlobalErrorProps } from '@/store/types'
 import { currentUser } from '@/store/testData'
 import { axios } from '@/libs/http'
-import { StorageHandler, StorageType } from '@/libs/storage'
+import { StorageHandler, storageType } from '@/libs/storage'
 
-const storageType = StorageType.Local
 const storageHandler = new StorageHandler()
 
 const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
   const { data } = await axios.get(url)
   commit(mutationName, data)
+  return data
 }
 
 const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => {
@@ -66,19 +66,19 @@ export default createStore<GlobalDataProps>({
     logout (state) {
       state.token = ''
       state.user = { isLogin: false }
-      storageHandler.removeItem(StorageType.Local, 'token')
+      storageHandler.removeItem(storageType, 'token')
       delete axios.defaults.headers.common.Authorization
     }
   },
   actions: {
     fetchColumns ({ commit }) {
-      getAndCommit('/api/columns', 'fetchColumns', commit)
+      return getAndCommit('/api/columns', 'fetchColumns', commit)
     },
     fetchColumn ({ commit }, cid) {
-      getAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+      return getAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
     },
     fetchPosts ({ commit }, cid) {
-      getAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
+      return getAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
     },
     login ({ commit }, payload) {
       return postAndCommit('/api/user/login', 'login', commit, payload)

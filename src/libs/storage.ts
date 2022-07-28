@@ -3,6 +3,8 @@ export enum StorageType {
   Session = 'Session'
 }
 
+export const storageType = StorageType.Local
+
 export class StorageHandler {
   setItem (type: StorageType, key: string, value: string) {
     if (type === StorageType.Local) {
