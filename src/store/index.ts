@@ -3,6 +3,7 @@ import { GlobalDataProps, GlobalErrorProps } from '@/store/types'
 import { currentUser } from '@/store/testData'
 import { axios, AxiosRequestConfig } from '@/libs/http'
 import { StorageHandler, storageType } from '@/libs/storage'
+import { arrToObj, objToArr } from '@/libs/helper'
 
 const storageHandler = new StorageHandler()
 
@@ -20,20 +21,23 @@ export default createStore<GlobalDataProps>({
   state: {
     loading: false,
     error: { status: false },
-    columns: [],
-    posts: [],
+    columns: { data: {}, isLoaded: false },
+    posts: { data: {}, loadedColumns: [] },
     user: currentUser,
     token: storageHandler.getItem(storageType, 'token') || ''
   },
   getters: {
+    getColumns: (state) => () => {
+      return objToArr(state.columns.data)
+    },
     getColumnById: (state) => (id: string) => {
-      return state.columns.find(c => c._id === id)
+      return state.columns.data[id]
     },
     getPostsByCid: (state) => (cid: string) => {
-      return state.posts.filter(post => post.column === cid)
+      return objToArr(state.posts.data).filter(post => post.column === cid)
     },
     getCurrentPost: (state) => (id: string) => {
-      return state.posts.find(p => p._id === id)
+      return state.posts.data[id]
     }
   },
   mutations: {
@@ -43,18 +47,18 @@ export default createStore<GlobalDataProps>({
     setError (state, err: GlobalErrorProps) {
       state.error = err
     },
-
     fetchColumns (state, data) {
-      state.columns = data.data.list
+      state.columns = { data: arrToObj(data.data.list), isLoaded: true }
     },
     fetchColumn (state, data) {
-      state.columns = [data.data]
+      state.columns.data[data.data._id] = data.data
     },
-    fetchPosts (state, data) {
-      state.posts = data.data.list
+    fetchPosts (state, { data: rawData, extraData: columnId }) {
+      state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
+      state.posts.loadedColumns.push(columnId)
     },
     fetchPost (state, data) {
-      state.posts = [data.data]
+      state.posts.data[data.data._id] = data.data
     },
     login (state, data) {
       const { token } = data.data
@@ -73,33 +77,38 @@ export default createStore<GlobalDataProps>({
       delete axios.defaults.headers.common.Authorization
     },
     createPost (state, newPost) {
-      state.posts.push(newPost)
+      state.posts.data[newPost._id] = newPost
     },
     updatePost (state, { data }) {
-      state.posts = state.posts.map(post => {
-        if (post._id === data._id) {
-          return data
-        } else {
-          return post
-        }
-      })
+      state.posts.data[data._id] = data
     },
     deletePost (state, { data }) {
-      state.posts = state.posts.filter(post => post._id !== data._id)
+      delete state.posts.data[data._id]
     }
   },
   actions: {
-    fetchColumns ({ commit }) {
-      return asyncAndCommit('/api/columns', 'fetchColumns', commit)
+    fetchColumns ({ state, commit }) {
+      if (!state.columns.isLoaded) {
+        return asyncAndCommit('/api/columns', 'fetchColumns', commit)
+      }
     },
-    fetchColumn ({ commit }, cid) {
-      return asyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+    fetchColumn ({ state, commit }, cid) {
+      if (!state.columns.data[cid]) {
+        return asyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+      }
     },
-    fetchPosts ({ commit }, cid) {
-      return asyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
+    fetchPosts ({ state, commit }, cid) {
+      if (!state.posts.loadedColumns.includes(cid)) {
+        return asyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
+      }
     },
-    fetchPost ({ commit }, id) {
-      return asyncAndCommit(`/api/posts/${id}`, 'fetchPost', commit)
+    fetchPost ({ state, commit }, id) {
+      const currentPost = state.posts.data[id]
+      if (!currentPost || !currentPost.content) {
+        return asyncAndCommit(`/api/posts/${id}`, 'fetchPost', commit)
+      } else {
+        return Promise.resolve({ data: currentPost })
+      }
     },
     login ({ commit }, payload) {
       return asyncAndCommit('/api/user/login', 'login', commit, { method: 'post', data: payload })

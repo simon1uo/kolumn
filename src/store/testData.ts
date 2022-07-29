@@ -1,4 +1,5 @@
 import { ColumnProps, PostProps, UserProps } from '@/store/types'
+import { arrToObj, objToArr } from '@/libs/helper'
 
 // export const testColumns: ColumnProps[] = [
 //   {
@@ -59,3 +60,29 @@ export const currentUser: UserProps = {
   _id: 'test',
   column: 'test'
 }
+
+interface TestProps {
+  _id: string
+  name: string
+}
+
+const testData1: TestProps[] = [
+  {
+    _id: '1',
+    name: 'a'
+  },
+  {
+    _id: '2',
+    name: 'b'
+  }
+]
+
+const testData2: {[key: string]: TestProps} = {
+  1: { _id: '1', name: 'a' },
+  2: { _id: '2', name: 'b' }
+}
+
+// const result1 = arrToObj(testData1)
+// console.log(result1)
+// const result2 = objToArr(testData2)
+// console.log(result2)

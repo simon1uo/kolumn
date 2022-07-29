@@ -53,11 +53,21 @@ export interface GlobalErrorProps {
   message?: string
 }
 
+interface ListProps<P> {
+  [id: string]: P
+}
+
 export interface GlobalDataProps {
   loading: boolean
   error: GlobalErrorProps
-  columns: ColumnProps[]
-  posts: PostProps[]
+  columns: {
+    data: ListProps<ColumnProps>
+    isLoaded: boolean
+  }
+  posts: {
+    data: ListProps<PostProps>
+    loadedColumns: Array<string>
+  }
   user: UserProps
   token: string
 }

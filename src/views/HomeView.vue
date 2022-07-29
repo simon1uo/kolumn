@@ -15,6 +15,7 @@
 import { computed, defineComponent, onMounted } from 'vue'
 import ColumnList from '@/components/ColumnList.vue'
 import { useStore } from 'vuex'
+import { arrToObj } from '@/libs/helper'
 
 export default defineComponent({
   name: 'HomeView',
@@ -26,7 +27,8 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('fetchColumns')
     })
-    const list = computed(() => store.state.columns)
+
+    const list = computed(() => store.getters.getColumns())
     return {
       list
     }
