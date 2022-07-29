@@ -62,7 +62,7 @@ export interface GlobalDataProps {
   token: string
 }
 
-export interface ResponseType<P ={}> {
+export interface ResponseType<P> {
   code: number
   msg: string
   data: P

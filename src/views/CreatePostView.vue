@@ -82,7 +82,6 @@ export default defineComponent({
       if (queryId) {
         store.dispatch('fetchPost', queryId).then((data: ResponseType<PostProps>) => {
           const currentPost = data.data
-          console.log(currentPost)
           const { image, title, content } = currentPost
           titleVal.value = title
           postContentVal.value = content || ''

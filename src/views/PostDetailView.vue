@@ -14,28 +14,34 @@
 
       <div v-if="showEditArea" class="btn-group mt-5">
         <router-link class="btn btn-warning" :to="{name: 'create', query: {id: currentPost._id}}">Edit Post</router-link>
-        <button type="button" class="btn btn-danger" :to="{name: 'create', query: {id: currentPost._id}}">Delete Post</button>
-
+        <button type="button" class="btn btn-danger" @click.prevent="modalVisible = true">Delete Post</button>
       </div>
     </article>
+    <ModalBox title="Delete Post" :visible="modalVisible" @modal-on-close="modalVisible = false" @modal-on-confirm="deletePost">
+      Are you sure to delete this post?
+    </ModalBox>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-import { GlobalDataProps, ImageProps, UserProps } from '@/store/types'
 import MarkdownIt from 'markdown-it'
+
 import UserProfile from '@/base/UserProfile.vue'
+import ModalBox from '@/base/ModalBox.vue'
+import { GlobalDataProps, ImageProps, PostProps, UserProps, ResponseType } from '@/store/types'
+import createMessage from '@/base/createMessage'
 
 export default defineComponent({
   name: 'PostDetailView',
-  components: { UserProfile },
+  components: { ModalBox, UserProfile },
   setup () {
     const store = useStore<GlobalDataProps>()
     const route = useRoute()
+    const router = useRouter()
     const currentId = route.params.id
 
     onMounted(() => {
@@ -73,11 +79,23 @@ export default defineComponent({
       }
     })
 
+    const modalVisible = ref(false)
+    const deletePost = () => {
+      modalVisible.value = false
+      store.dispatch('deletePost', currentId).then((data: ResponseType<PostProps>) => {
+        createMessage('The post has been deleted successfully', 'success')
+        setTimeout(() => {
+          router.push(`/column/${store.state.user.column}`)
+        }, 2000)
+      })
+    }
     return {
       currentPost,
       currentHTML,
       currentImageUrl,
-      showEditArea
+      showEditArea,
+      modalVisible,
+      deletePost
     }
   }
 })
