@@ -11,6 +11,12 @@
       </div>
 
       <div v-html="currentHTML"></div>
+
+      <div v-if="showEditArea" class="btn-group mt-5">
+        <router-link class="btn btn-warning" :to="{name: 'create', query: {id: currentPost._id}}">Edit Post</router-link>
+        <button type="button" class="btn btn-danger" :to="{name: 'create', query: {id: currentPost._id}}">Delete Post</button>
+
+      </div>
     </article>
   </div>
 </template>
@@ -20,7 +26,7 @@ import { computed, defineComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 
-import { GlobalDataProps, ImageProps } from '@/store/types'
+import { GlobalDataProps, ImageProps, UserProps } from '@/store/types'
 import MarkdownIt from 'markdown-it'
 import UserProfile from '@/base/UserProfile.vue'
 
@@ -34,7 +40,6 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch('fetchPost', currentId)
-      console.log(currentId)
     })
 
     const mdi = new MarkdownIt()
@@ -52,21 +57,32 @@ export default defineComponent({
     const currentImageUrl = computed(() => {
       if (currentPost.value && currentPost.value.image) {
         const { image } = currentPost.value
-        return (image as ImageProps).url + '?x-oss-process=image/resize,w_850'
+        return (image as ImageProps).url + '?x-oss-process=image/resize,h_300'
       } else {
         return null
+      }
+    })
+
+    const showEditArea = computed(() => {
+      const { isLogin, _id } = store.state.user
+      if (currentPost.value && currentPost.value.author && isLogin) {
+        const postAuthor = currentPost.value.author as UserProps
+        return postAuthor._id === _id
+      } else {
+        return false
       }
     })
 
     return {
       currentPost,
       currentHTML,
-      currentImageUrl
+      currentImageUrl,
+      showEditArea
     }
   }
 })
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 
 </style>

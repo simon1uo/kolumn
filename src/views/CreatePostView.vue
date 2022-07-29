@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <div class="h4">✍🏻 Create Post</div>
+    <div class="h4">{{ isEditMode ? "✍🏻 Edit Post" : "✍🏻 Create Post" }}</div>
     <ValidateUpload action="/api/upload"
                     class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
                     :before-upload="beforeUpload"
+                    :uploaded="uploadedData"
                     @file-uploaded-success="onFileUploadedSuccess"
                     @file-uploaded-error="onFileUploadedError">
       <div class="h4">Upload you post cover images 🚀</div>
@@ -43,16 +44,16 @@
                        v-model="postContentVal"/>
       </div>
       <template #submit>
-        <button class="btn btn-primary btn-large">Submit Post</button>
+        <button class="btn btn-primary btn-large">{{ isEditMode ? "✍🏻 Update Post" : "✍🏻 Submit Post" }}</button>
       </template>
     </ValidateForm>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import ValidateForm from '@/base/ValidateForm.vue'
 import ValidateInput from '@/base/ValidateInput.vue'
@@ -71,7 +72,27 @@ export default defineComponent({
   },
   setup () {
     const store = useStore()
+    const route = useRoute()
     const router = useRouter()
+
+    const queryId = route.query.id
+    const isEditMode = !!queryId
+
+    onMounted(() => {
+      if (queryId) {
+        store.dispatch('fetchPost', queryId).then((data: ResponseType<PostProps>) => {
+          const currentPost = data.data
+          console.log(currentPost)
+          const { image, title, content } = currentPost
+          titleVal.value = title
+          postContentVal.value = content || ''
+          if (image) {
+            uploadedData.value = { data: image }
+          }
+        })
+      }
+    })
+
     const titleVal = ref('')
     const titleRules: RulesProp = [
       { type: 'required', message: 'Post title cannot be empty' }
@@ -82,6 +103,7 @@ export default defineComponent({
       { type: 'required', message: 'Post content cannot be empty' }
     ]
 
+    const uploadedData = ref()
     let imageId = ''
 
     const beforeUpload = (file: File) => {
@@ -120,9 +142,16 @@ export default defineComponent({
             newPost.image = imageId
           }
 
-          // console.log(newPost)
-          store.dispatch('createPost', newPost).then(() => {
-            createMessage('Post submit successfully. you will jump to post after 2s', 'success', 2000)
+          const actionName = isEditMode ? 'updatePost' : 'createPost'
+          const sendData = isEditMode
+            ? {
+                id: queryId,
+                payload: newPost
+              }
+            : newPost
+
+          store.dispatch(actionName, sendData).then(() => {
+            createMessage('The post has submitted successfully. you will jump to post after 2s', 'success', 2000)
             setTimeout(() => {
               router.push({
                 name: 'column',
@@ -137,12 +166,14 @@ export default defineComponent({
     }
 
     return {
+      isEditMode,
       titleVal,
       titleRules,
       postContentVal,
       postContentRules,
       onFormSubmit,
       beforeUpload,
+      uploadedData,
       onFileUploadedSuccess,
       onFileUploadedError
     }

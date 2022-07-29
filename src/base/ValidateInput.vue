@@ -4,18 +4,16 @@
            type="text"
            class="form-control"
            :class="{'is-invalid': inputRef.error}"
-           :value="inputRef.value"
            @blur="validateInput"
-           @input="updateValue"
            v-bind="$attrs"
+           v-model="inputRef.value"
     >
     <textarea v-else
               class="form-control"
               :class="{'is-invalid': inputRef.error}"
-              :value="inputRef.value"
               @blur="validateInput"
-              @input="updateValue"
               v-bind="$attrs"
+              v-model="inputRef.value"
     />
 
     <span v-if="inputRef.error" class="invalid-feedback">{{ inputRef.message }}</span>
@@ -23,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, reactive } from 'vue'
+import { computed, defineComponent, onMounted, PropType, reactive } from 'vue'
 import { emitter } from '@/base/ValidateForm.vue'
 import { RulesProp, TagType } from '@/store/types'
 
@@ -42,7 +40,12 @@ export default defineComponent({
   inheritAttrs: false,
   setup (props, context) {
     const inputRef = reactive({
-      value: props.modelValue || '',
+      value: computed({
+        get: () => props.modelValue || '',
+        set: val => {
+          context.emit('update:modelValue', val)
+        }
+      }),
       error: false,
       message: ''
     })
@@ -82,12 +85,6 @@ export default defineComponent({
       return true
     }
 
-    const updateValue = (e: KeyboardEvent) => {
-      const targetValue = (e.target as HTMLInputElement).value
-      inputRef.value = targetValue
-      context.emit('update:modelValue', targetValue)
-    }
-
     const clearValue = () => {
       inputRef.value = ''
       inputRef.message = ''
@@ -100,7 +97,6 @@ export default defineComponent({
     return {
       inputRef,
       validateInput,
-      updateValue,
       clearValue
     }
   }

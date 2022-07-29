@@ -1,20 +1,18 @@
 import { Commit, createStore } from 'vuex'
 import { GlobalDataProps, GlobalErrorProps } from '@/store/types'
 import { currentUser } from '@/store/testData'
-import { axios } from '@/libs/http'
+import { axios, AxiosRequestConfig } from '@/libs/http'
 import { StorageHandler, storageType } from '@/libs/storage'
 
 const storageHandler = new StorageHandler()
 
-const getAndCommit = async (url: string, mutationName: string, commit: Commit) => {
-  const { data } = await axios.get(url)
-  commit(mutationName, data)
-  return data
-}
-
-const postAndCommit = async (url: string, mutationName: string, commit: Commit, payload: any) => {
-  const { data } = await axios.post(url, payload)
-  commit(mutationName, data)
+const asyncAndCommit = async (url: string, mutationName: string, commit: Commit, config: AxiosRequestConfig = { method: 'get' }, extraData?: any) => {
+  const { data } = await axios(url, config)
+  if (extraData) {
+    commit(mutationName, { data, extraData })
+  } else {
+    commit(mutationName, data)
+  }
   return data
 }
 
@@ -45,10 +43,7 @@ export default createStore<GlobalDataProps>({
     setError (state, err: GlobalErrorProps) {
       state.error = err
     },
-    createPost (state, newPost) {
-      state.posts.push(newPost)
-      console.log(newPost)
-    },
+
     fetchColumns (state, data) {
       state.columns = data.data.list
     },
@@ -59,10 +54,7 @@ export default createStore<GlobalDataProps>({
       state.posts = data.data.list
     },
     fetchPost (state, data) {
-      const targetId = data.data._id
-      const oldIndex = state.posts.findIndex(c => c._id === targetId)
-      const newPost = data.data
-      state.posts.splice(oldIndex, 1, newPost)
+      state.posts = [data.data]
     },
     login (state, data) {
       const { token } = data.data
@@ -79,26 +71,38 @@ export default createStore<GlobalDataProps>({
       state.user = { isLogin: false }
       storageHandler.removeItem(storageType, 'token')
       delete axios.defaults.headers.common.Authorization
+    },
+    createPost (state, newPost) {
+      state.posts.push(newPost)
+    },
+    updatePost (state, { data }) {
+      state.posts = state.posts.map(post => {
+        if (post._id === data._id) {
+          return data
+        } else {
+          return post
+        }
+      })
     }
   },
   actions: {
     fetchColumns ({ commit }) {
-      return getAndCommit('/api/columns', 'fetchColumns', commit)
+      return asyncAndCommit('/api/columns', 'fetchColumns', commit)
     },
     fetchColumn ({ commit }, cid) {
-      return getAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+      return asyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
     },
     fetchPosts ({ commit }, cid) {
-      return getAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
+      return asyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit)
     },
-    fetchPost ({ commit }, pid) {
-      return getAndCommit(`/api/posts/${pid}`, 'fetchPost', commit)
+    fetchPost ({ commit }, id) {
+      return asyncAndCommit(`/api/posts/${id}`, 'fetchPost', commit)
     },
     login ({ commit }, payload) {
-      return postAndCommit('/api/user/login', 'login', commit, payload)
+      return asyncAndCommit('/api/user/login', 'login', commit, { method: 'post', data: payload })
     },
     fetchCurrentUser ({ commit }) {
-      return getAndCommit('/api/user/current', 'fetchCurrentUser', commit)
+      return asyncAndCommit('/api/user/current', 'fetchCurrentUser', commit)
     },
     loginAndFetch ({ dispatch }, loginData) {
       return dispatch('login', loginData).then(() => {
@@ -106,10 +110,16 @@ export default createStore<GlobalDataProps>({
       })
     },
     signup ({ commit }, payload) {
-      return postAndCommit('/api/users', 'signup', commit, payload)
+      return asyncAndCommit('/api/users', 'signup', commit, { method: 'post', data: payload })
     },
     createPost ({ commit }, payload) {
-      return postAndCommit('/api/posts', 'createPost', commit, payload)
+      return asyncAndCommit('/api/posts', 'createPost', commit, { method: 'post', data: payload })
+    },
+    updatePost ({ commit }, { id, payload }) {
+      return asyncAndCommit(`/api/posts/${id}`, 'updatePost', commit, {
+        method: 'PATCH',
+        data: payload
+      })
     }
   },
   modules: {}

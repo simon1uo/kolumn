@@ -18,6 +18,7 @@
         <li class="list-inline-item">
           <DropdownMenu :title="`Hi👋🏻 ${user.nickName}`">
             <DropdownItem><router-link to="/create" class="dropdown-item">New Post</router-link></DropdownItem>
+            <DropdownItem><router-link :to="`/column/${user.column}`" class="dropdown-item">My Column</router-link></DropdownItem>
             <DropdownItem disabled><router-link to="/" class="dropdown-item text-muted">Edit Profile</router-link></DropdownItem>
             <DropdownItem><a href="#" class="dropdown-item" @click.prevent="handleLogout">Logout</a></DropdownItem>
           </DropdownMenu>

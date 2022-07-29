@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import store from '../store'
 
 axios.interceptors.request.use(config => {
@@ -18,4 +18,4 @@ axios.interceptors.response.use(res => {
   store.commit('setLoading', false)
   return Promise.reject(error)
 })
-export { axios }
+export { axios, AxiosRequestConfig }

@@ -30,7 +30,7 @@ export interface PostProps {
   image?: ImageProps | string
   createdAt?: string
   column?: string
-  author?: UserProps | string
+  author?: string | UserProps
   isHTML?: boolean
 }
 
