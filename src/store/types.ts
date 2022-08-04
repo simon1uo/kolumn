@@ -34,6 +34,12 @@ export interface PostProps {
   isHTML?: boolean
 }
 
+export interface LoadedPostProps {
+  columnId?: string
+  currentPage: number
+  total: number
+}
+
 interface RuleProp {
   type: 'required' | 'email' | 'range' | 'validator'
   message: string
@@ -67,7 +73,7 @@ export interface GlobalDataProps {
   }
   posts: {
     data: ListProps<PostProps>
-    loadedColumns: Array<string>
+    loadedColumns: ListProps<LoadedPostProps>
   }
   user: UserProps
   token: string

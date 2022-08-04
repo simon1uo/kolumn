@@ -22,7 +22,7 @@ export default createStore<GlobalDataProps>({
     loading: false,
     error: { status: false },
     columns: { data: {}, currentPage: 0, total: 0 },
-    posts: { data: {}, loadedColumns: [] },
+    posts: { data: {}, loadedColumns: {} },
     user: currentUser,
     token: storageHandler.getItem(storageType, 'token') || ''
   },
@@ -38,6 +38,9 @@ export default createStore<GlobalDataProps>({
     },
     getCurrentPost: (state) => (id: string) => {
       return state.posts.data[id]
+    },
+    getLoadedPost: (state) => (id: string) => {
+      return state.posts.loadedColumns[id]
     }
   },
   mutations: {
@@ -56,8 +59,14 @@ export default createStore<GlobalDataProps>({
       state.columns.data[data.data._id] = data.data
     },
     fetchPosts (state, { data: rawData, extraData: columnId }) {
-      state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
-      state.posts.loadedColumns.push(columnId)
+      const { data } = state.posts
+      const { list, count, currentPage } = rawData.data
+      state.posts.data = { ...data, ...arrToObj(list) }
+      state.posts.loadedColumns[columnId] = {
+        columnId: columnId,
+        total: count,
+        currentPage: currentPage * 1
+      }
     },
     fetchPost (state, data) {
       state.posts.data[data.data._id] = data.data
@@ -103,9 +112,16 @@ export default createStore<GlobalDataProps>({
         return asyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
       }
     },
-    fetchPosts ({ state, commit }, cid) {
-      if (!state.posts.loadedColumns.includes(cid)) {
-        return asyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
+    fetchPosts ({ state, commit }, params = {}) {
+      const { columnId, currentPage = 1, pageSize = 3 } = params
+      const loadedPost = state.posts.loadedColumns[columnId]
+      if (!loadedPost) {
+        return asyncAndCommit(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchPosts', commit, { method: 'get' }, columnId)
+      } else {
+        const loadedPostCurrentPage = loadedPost.currentPage || 0
+        if (loadedPostCurrentPage < currentPage) {
+          return asyncAndCommit(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchPosts', commit, { method: 'get' }, columnId)
+        }
       }
     },
     fetchPost ({ state, commit }, id) {
