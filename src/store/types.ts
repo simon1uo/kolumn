@@ -62,7 +62,8 @@ export interface GlobalDataProps {
   error: GlobalErrorProps
   columns: {
     data: ListProps<ColumnProps>
-    isLoaded: boolean
+    currentPage: number
+    total: number
   }
   posts: {
     data: ListProps<PostProps>

@@ -21,7 +21,7 @@ export default createStore<GlobalDataProps>({
   state: {
     loading: false,
     error: { status: false },
-    columns: { data: {}, isLoaded: false },
+    columns: { data: {}, currentPage: 0, total: 0 },
     posts: { data: {}, loadedColumns: [] },
     user: currentUser,
     token: storageHandler.getItem(storageType, 'token') || ''
@@ -47,8 +47,10 @@ export default createStore<GlobalDataProps>({
     setError (state, err: GlobalErrorProps) {
       state.error = err
     },
-    fetchColumns (state, data) {
-      state.columns = { data: arrToObj(data.data.list), isLoaded: true }
+    fetchColumns (state, rawData) {
+      const { data } = state.columns
+      const { list, count, currentPage } = rawData.data
+      state.columns = { data: { ...data, ...arrToObj(list) }, currentPage: currentPage * 1, total: count }
     },
     fetchColumn (state, data) {
       state.columns.data[data.data._id] = data.data
@@ -87,9 +89,13 @@ export default createStore<GlobalDataProps>({
     }
   },
   actions: {
-    fetchColumns ({ state, commit }) {
-      if (!state.columns.isLoaded) {
-        return asyncAndCommit('/api/columns', 'fetchColumns', commit)
+    fetchColumns ({ state, commit }, params = {}) {
+      const { currentPage = 1, pageSize = 6 } = params
+      // if (!state.columns.isLoaded) {
+      //   return asyncAndCommit('/api/columns', 'fetchColumns', commit)
+      // }
+      if (state.columns.currentPage < currentPage) {
+        return asyncAndCommit(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
       }
     },
     fetchColumn ({ state, commit }, cid) {
